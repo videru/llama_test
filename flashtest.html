@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chat with GPT</title>
+    <style>
+        #chat-container {
+            width: 500px;
+            margin: auto;
+            text-align: center;
+        }
+
+        #chat-output {
+            height: 300px;
+            border: 1px solid #ddd;
+            margin-bottom: 10px;
+            padding: 10px;
+            overflow-y: scroll;
+        }
+
+        #chat-input {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="chat-container">
+        <div id="chat-output"></div>
+        <textarea id="chat-input" placeholder="Type your message here..."></textarea>
+        <button id="send-button">Send</button>
+    </div>
+    <script>
+        document.getElementById('send-button').addEventListener('click', function() {
+            var userInput = document.getElementById('chat-input').value;
+            document.getElementById('chat-input').value = '';
+
+            // This example assumes your Flask server is running on localhost:5000
+            fetch('http://localhost:5000/send-message', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ message: userInput })
+            })
+            .then(response => response.json())
+            .then(data => {
+                var chatOutput = document.getElementById('chat-output');
+                chatOutput.innerHTML += `<div>User: ${userInput}</div>`;
+                chatOutput.innerHTML += `<div>GPT: ${data.reply}</div>`;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                var chatOutput = document.getElementById('chat-output');
+                chatOutput.innerHTML += `<div>Error: Could not send message</div>`;
+            });
+        });
+    </script>
+</body>
+</html>
